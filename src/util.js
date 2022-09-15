@@ -63,7 +63,7 @@ function normalization(array) {
   const min = Math.min.apply(null, array)
   return array.map((v) => Math.round((v - min) / (max - min)))
 }
-/* 返回 */
+
 function sobel(imgGrayDataArray, imgWidth, imgHeight) {
   const kernelX = [-1, 0, -1, -2, 0, +2, -1, 0, +1]
   const kernelY = [1, 2, 1, 0, 0, 0, -1, -2, -1]
@@ -87,12 +87,13 @@ function sobel(imgGrayDataArray, imgWidth, imgHeight) {
   console.log('gradXArray', gradXArray)
   console.log('gradYArray', gradYArray)
   console.log('gradTotalArray', gradTotalArray)
+  console.log('thetaArray', gradTotalArray)
   return { gradXArray, gradYArray, gradTotalArray, thetaArray }
 }
 
 function convolution(imgGrayDataArray, pixelPosX, pixelPosY, kernel) {
-  const fieldX = [pixelPosX - 1, pixelPosX, pixelPosX + 1]
-  const fieldY = [pixelPosY - 1, pixelPosY, pixelPosY + 1]
+  const fieldY = [pixelPosX - 1, pixelPosX, pixelPosX + 1]
+  const fieldX = [pixelPosY - 1, pixelPosY, pixelPosY + 1]
   const width = Math.sqrt(imgGrayDataArray.length / 4)
   let i = 0
   let res = 0
