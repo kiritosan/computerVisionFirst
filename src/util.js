@@ -57,6 +57,12 @@ function grayScale(imgDataArray) {
   return imgArray
 }
 
+/* 需要归一化后再乘255 */
+function normalization(array) {
+  const max = Math.max.apply(null, array)
+  const min = Math.min.apply(null, array)
+  return array.map((v) => Math.round((v - min) / (max - min)))
+}
 /* 返回 */
 function sobel(imgGrayDataArray, imgWidth, imgHeight) {
   const kernelX = [-1, 0, -1, -2, 0, +2, -1, 0, +1]
@@ -137,4 +143,4 @@ function arrayDivide(arrayY, arrayX) {
   return arrayY.slice().map((v, i) => Math.round(v / arrayX[i]))
 }
 
-export { getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide }
+export { getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide, normalization }
