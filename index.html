@@ -5,12 +5,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script type="module" src="main.js" defer></script>
+    <link rel="stylesheet" href="css/base.css">
   </head>
   <body>
-    <canvas id="myCanvas" width="300" height="300"></canvas>
-    <canvas id="myCanvasGray" width="300" height="300"></canvas>
-    <canvas id="myCanvasEdgeX" width="298" height="298"></canvas>
-    <canvas id="myCanvasEdgeY" width="298" height="298"></canvas>
-    <canvas id="myCanvasEdgeTotal" width="298" height="298"></canvas>
+    <div class="flex wrap childrenDivLeft"> 
+      <div class="flex col center">
+        <canvas id="myCanvas" width="300" height="300"></canvas>
+        <p>原图</p>
+      </div>
+      <div class="flex col center">
+        <canvas id="myCanvasGray" width="300" height="300"></canvas>
+        <p>灰度处理</p>
+      </div>
+      <div class="flex col center">
+        <canvas id="myCanvasEdgeX" width="298" height="298"></canvas>
+        <p>X方向梯度</p>
+      </div>
+      <div class="flex col center">
+        <canvas id="myCanvasEdgeY" width="298" height="298"></canvas>
+        <p>Y方向梯度</p>
+      </div>
+      <div class="flex col center">
+        <canvas id="myCanvasEdgeTotal" width="298" height="298"></canvas>
+        <p>总梯度</p>
+      </div>
+    </div>
   </body>
 </html>

@@ -47,17 +47,17 @@ function matrixTraversal({ width, height }) {
 /* https://en.wikipedia.org/wiki/Grayscale */
 /*灰度算法: 0.299*r+0.587*g+0.114*b */
 function grayScale(imgDataArray) {
+  const imgArray = []
   for (let i = 0; i < imgDataArray.length; i += 4) {
     const [r, g, b] = [imgDataArray[i], imgDataArray[i + 1], imgDataArray[i + 2]]
     const y = 0.299 * r + 0.587 * g + 0.114 * b
-    imgDataArray[i] = y
-    imgDataArray[i + 1] = y
-    imgDataArray[i + 2] = y
+    imgArray.push(y)
   }
-  console.log('ImageGrayDataArray:', imgDataArray)
-  return imgDataArray
+  console.log('ImageGrayArray:', imgArray)
+  return imgArray
 }
 
+/* 返回 */
 function sobel(imgGrayDataArray, imgWidth, imgHeight) {
   const kernelX = [-1, 0, -1, -2, 0, +2, -1, 0, +1]
   const kernelY = [1, 2, 1, 0, 0, 0, -1, -2, -1]
@@ -65,30 +65,34 @@ function sobel(imgGrayDataArray, imgWidth, imgHeight) {
   const gradXArray = []
   const gradYArray = []
   const gradTotalArray = []
+  const thetaArray = []
   for (let i = 1; i < imgWidth - 1; i++) {
     for (let j = 1; j < imgHeight - 1; j++) {
       const gradX = convolution(imgGrayDataArray, i, j, kernelX)
       const gradY = convolution(imgGrayDataArray, i, j, kernelY)
       const gradTotal = Math.abs(gradX) + Math.abs(gradY)
+      const theta = Math.atan(gradY / gradX)
       gradXArray.push(gradX)
       gradYArray.push(gradY)
       gradTotalArray.push(gradTotal)
+      thetaArray.push(theta)
     }
   }
   console.log('gradXArray', gradXArray)
   console.log('gradYArray', gradYArray)
   console.log('gradTotalArray', gradTotalArray)
-  return { gradXArray, gradYArray, gradTotalArray }
+  return { gradXArray, gradYArray, gradTotalArray, thetaArray }
 }
 
 function convolution(imgGrayDataArray, pixelPosX, pixelPosY, kernel) {
   const fieldX = [pixelPosX - 1, pixelPosX, pixelPosX + 1]
   const fieldY = [pixelPosY - 1, pixelPosY, pixelPosY + 1]
+  const width = Math.sqrt(imgGrayDataArray.length / 4)
   let i = 0
   let res = 0
   for (const row of fieldY) {
     for (const col of fieldX) {
-      res += imgGrayDataArray[row * col * 4 + 0] * kernel[i] /*rgba的r, 由于被灰度处理过 所以rgb数值一致*/
+      res += imgGrayDataArray[(row * width + col) * 4] * kernel[i] /*rgba的r, 由于被灰度处理过 所以rgb数值一致*/
       i += 1
     }
   }
@@ -105,20 +109,20 @@ function transposition(arr) {
   })
 }
 
-/* 梯度数组扩展成四值一组的imageArray */
-function changeToImageDataArray(gradArray) {
-  const len = gradArray.length
-  const imgGradDataArray = new Uint8ClampedArray(len * 4)
+/* 卷积后数组扩展成四值一组的imageArray */
+function expandToImageDataArray(array) {
+  const len = array.length
+  const imgDataArray = new Uint8ClampedArray(len * 4)
   let gradArrayIndex = 0
   for (let i = 0; i < len * 4; i += 4) {
-    imgGradDataArray[i] = gradArray[gradArrayIndex]
-    imgGradDataArray[i + 1] = gradArray[gradArrayIndex]
-    imgGradDataArray[i + 2] = gradArray[gradArrayIndex]
-    imgGradDataArray[i + 3] = 255
+    imgDataArray[i] = array[gradArrayIndex]
+    imgDataArray[i + 1] = array[gradArrayIndex]
+    imgDataArray[i + 2] = array[gradArrayIndex]
+    imgDataArray[i + 3] = 255
     gradArrayIndex += 1
   }
-  console.log('imgGradDataArray', imgGradDataArray)
-  return imgGradDataArray
+  console.log('imgDataArray', imgDataArray)
+  return imgDataArray
 }
 
 function arrayDivide(arrayY, arrayX) {
@@ -133,4 +137,4 @@ function arrayDivide(arrayY, arrayX) {
   return arrayY.slice().map((v, i) => Math.round(v / arrayX[i]))
 }
 
-export { getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, changeToImageDataArray, arrayDivide }
+export { getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide }
