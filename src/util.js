@@ -18,12 +18,12 @@ function getImageData(canvas, url) {
 function drawImageFromArray(canvas, imgDataArray) {
   const ctx = canvas.getContext('2d')
   const { width: w, height: h } = canvas
-  const imgGrayData = ctx.createImageData(w, h)
+  const imgData = ctx.createImageData(w, h)
   for (let i = 0; i < imgDataArray.length; i += 4) {
-    ;[imgGrayData.data[i], imgGrayData.data[i + 1], imgGrayData.data[i + 2], imgGrayData.data[i + 3]] = [imgDataArray[i], imgDataArray[i + 1], imgDataArray[i + 2], imgDataArray[i + 3]]
+    ;[imgData.data[i], imgData.data[i + 1], imgData.data[i + 2], imgData.data[i + 3]] = [imgDataArray[i], imgDataArray[i + 1], imgDataArray[i + 2], imgDataArray[i + 3]]
   }
 
-  ctx.putImageData(imgGrayData, 0, 0)
+  ctx.putImageData(imgData, 0, 0)
 }
 
 function pixelTraversal(imgDataArray) {
@@ -105,22 +105,20 @@ function transposition(arr) {
   })
 }
 
-function fillImageArray(imgDataArray, gradArray) {
-  const newImgDataArray = imgDataArray.slice() /* avoid original array changed */
-  const { width, height } = newImgDataArray
-  let i = 0
-  for (let row = 0; row < width; row++) {
-    for (let col = 0; col < height; col++) {
-      let index = (row * width + col) * 4
-      /* 忽略边上一圈像素 */
-      if (col >= 1 && col <= width - 2 && row >= 1 && row <= height - 2) {
-        ;[newImgDataArray[index], newImgDataArray[index + 1], newImgDataArray[index + 2]] = gradArray[i]
-        i++
-      }
-    }
+/* 梯度数组扩展成四值一组的imageArray */
+function changeToImageDataArray(gradArray) {
+  const len = gradArray.length
+  const imgGradDataArray = new Uint8ClampedArray(len * 4)
+  let gradArrayIndex = 0
+  for (let i = 0; i < len * 4; i += 4) {
+    imgGradDataArray[i] = gradArray[gradArrayIndex]
+    imgGradDataArray[i + 1] = gradArray[gradArrayIndex]
+    imgGradDataArray[i + 2] = gradArray[gradArrayIndex]
+    imgGradDataArray[i + 3] = 255
+    gradArrayIndex += 1
   }
-  console.log('imgGradDataArray', newImgDataArray)
-  return newImgDataArray
+  console.log('imgGradDataArray', imgGradDataArray)
+  return imgGradDataArray
 }
 
 function arrayDivide(arrayY, arrayX) {
@@ -135,4 +133,4 @@ function arrayDivide(arrayY, arrayX) {
   return arrayY.slice().map((v, i) => Math.round(v / arrayX[i]))
 }
 
-export { getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, fillImageArray, arrayDivide }
+export { getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, changeToImageDataArray, arrayDivide }
