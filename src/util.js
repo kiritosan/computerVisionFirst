@@ -78,7 +78,7 @@ function sobel(imgGrayDataArray, imgWidth, imgHeight) {
       const gradX = Math.floor(convolution(imgGrayDataArray, i, j, kernelX) / 8) /* 得到正确的幅值需要除以8 */
       const gradY = Math.floor(convolution(imgGrayDataArray, i, j, kernelY) / 8) /* 得到正确的幅值需要除以8 */
       const gradTotal = Math.sqrt(Math.pow(gradX, 2) + Math.pow(gradY, 2))
-      const theta = Math.atan(gradY / gradX)
+      const theta = radianToAngle(Math.atan(gradY / gradX))
       gradXArray.push(gradX)
       gradYArray.push(gradY)
       gradTotalArray.push(gradTotal)
@@ -156,4 +156,9 @@ function gaussianFilter() {
   n2 = -1 / (2 * sigma ** 2)
 }
 
-export { getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide, normalization }
+function radianToAngle(radian) {
+  /*弧度 乘以 一弧度多少角度*/
+  return Math.round(radian * (180 / Math.PI))
+}
+
+export { radianToAngle, gaussianFilter, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide, normalization }
