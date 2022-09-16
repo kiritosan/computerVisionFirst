@@ -75,9 +75,9 @@ function sobel(imgGrayDataArray, imgWidth, imgHeight) {
   const thetaArray = []
   for (let i = 1; i < imgWidth - 1; i++) {
     for (let j = 1; j < imgHeight - 1; j++) {
-      const gradX = convolution(imgGrayDataArray, i, j, kernelX)
-      const gradY = convolution(imgGrayDataArray, i, j, kernelY)
-      const gradTotal = Math.abs(gradX) + Math.abs(gradY)
+      const gradX = Math.floor(convolution(imgGrayDataArray, i, j, kernelX) / 8) /* 得到正确的幅值需要除以8 */
+      const gradY = Math.floor(convolution(imgGrayDataArray, i, j, kernelY) / 8) /* 得到正确的幅值需要除以8 */
+      const gradTotal = Math.sqrt(Math.pow(gradX, 2) + Math.pow(gradY, 2))
       const theta = Math.atan(gradY / gradX)
       gradXArray.push(gradX)
       gradYArray.push(gradY)
@@ -87,8 +87,8 @@ function sobel(imgGrayDataArray, imgWidth, imgHeight) {
   }
   console.log('gradXArray', gradXArray)
   console.log('gradYArray', gradYArray)
-  console.log('thetaArray', thetaArray)
   console.log('gradTotalArray', gradTotalArray)
+  console.log('thetaArray', thetaArray)
   return { gradXArray, gradYArray, thetaArray, gradTotalArray }
 }
 
@@ -143,6 +143,17 @@ function arrayDivide(arrayY, arrayX) {
     return []
   }
   return arrayY.slice().map((v, i) => Math.round(v / arrayX[i]))
+}
+
+/* https://zhuanlan.zhihu.com/p/445415462 */
+function gaussianFilter() {
+  const sigma = 0.5
+  dim = Math.round(3 * 2 * sigma + 1)
+  if (dim % 2 === 0) {
+    dim += 1
+  }
+  n1 = 1 / (2 * Math.pi * sigma ** 2)
+  n2 = -1 / (2 * sigma ** 2)
 }
 
 export { getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide, normalization }
