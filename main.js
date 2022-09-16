@@ -26,7 +26,6 @@ getImageData(canvas, './img/test.jpg').then((data) => {
   const gradImageYArray = expandToImageDataArray(normalGradYArray.map((v) => v * 255))
   const gradImageTotalArray = expandToImageDataArray(normalGradTotalArray.map((v) => v * 255))
 
-  console.log('thetaArray', thetaArray)
   drawImageFromArray(canvasEdgeX, gradImageXArray)
   drawImageFromArray(canvasEdgeY, gradImageYArray)
   drawImageFromArray(canvasEdgeTotal, gradImageTotalArray)

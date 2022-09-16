@@ -24,6 +24,7 @@ function drawImageFromArray(canvas, imgDataArray) {
   }
 
   ctx.putImageData(imgData, 0, 0)
+  console.log(`The picture has been rendered to canvas (canvas id: ${canvas.id})`)
 }
 
 function pixelTraversal(imgDataArray) {
@@ -86,19 +87,19 @@ function sobel(imgGrayDataArray, imgWidth, imgHeight) {
   }
   console.log('gradXArray', gradXArray)
   console.log('gradYArray', gradYArray)
+  console.log('thetaArray', thetaArray)
   console.log('gradTotalArray', gradTotalArray)
-  console.log('thetaArray', gradTotalArray)
-  return { gradXArray, gradYArray, gradTotalArray, thetaArray }
+  return { gradXArray, gradYArray, thetaArray, gradTotalArray }
 }
 
 function convolution(imgGrayDataArray, pixelPosX, pixelPosY, kernel) {
-  const fieldY = [pixelPosX - 1, pixelPosX, pixelPosX + 1]
-  const fieldX = [pixelPosY - 1, pixelPosY, pixelPosY + 1]
+  const fieldX = [pixelPosX - 1, pixelPosX, pixelPosX + 1] /* 向下是x方向，向右是y方向 */
+  const fieldY = [pixelPosY - 1, pixelPosY, pixelPosY + 1]
   const width = Math.sqrt(imgGrayDataArray.length / 4)
   let i = 0
   let res = 0
-  for (const row of fieldY) {
-    for (const col of fieldX) {
+  for (const row of fieldX) {
+    for (const col of fieldY) {
       res += imgGrayDataArray[(row * width + col) * 4] * kernel[i] /*rgba的r, 由于被灰度处理过 所以rgb数值一致*/
       i += 1
     }
@@ -128,7 +129,7 @@ function expandToImageDataArray(array) {
     imgDataArray[i + 3] = 255
     gradArrayIndex += 1
   }
-  console.log('imgDataArray', imgDataArray)
+  console.log('imgDataArray expand success', imgDataArray)
   return imgDataArray
 }
 
