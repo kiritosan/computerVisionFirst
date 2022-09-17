@@ -1,0 +1,6 @@
+{
+	"dependencies": {
+		"anywhere": "^1.6.0",
+		"canvas": "^2.10.1"
+	}
+}

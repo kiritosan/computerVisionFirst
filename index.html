@@ -29,6 +29,31 @@
         <canvas id="myCanvasEdgeTotal" width="298" height="298"></canvas>
         <p>总梯度</p>
       </div>
+      <div class="flex col center">
+        <!-- 由于k=5 所以像素值减两圈 边成了296＊296 -->
+        <canvas id="myCanvasGaussian" width="296" height="296"></canvas>
+        <p>高斯模糊</p>
+      </div>
+      <div class="flex col center">
+        <canvas id="myCanvasEdgeXS" width="294" height="294"></canvas>
+        <p>X方向梯度</p>
+      </div>
+      <div class="flex col center">
+        <canvas id="myCanvasEdgeYS" width="294" height="294"></canvas>
+        <p>Y方向梯度</p>
+      </div>
+      <div class="flex col center">
+        <canvas id="myCanvasEdgeTotalS" width="294" height="294"></canvas>
+        <p>总梯度</p>
+      </div>
+      <div class="flex col center">
+        <canvas id="myCanvasNMS" width="296" height="296"></canvas>
+        <p>非极大值抑制</p>
+      </div>
+      <div class="flex col center">
+        <canvas id="myCanvasLast" width="296" height="296"></canvas>
+        <p>双阈值和边缘连接</p>
+      </div>
     </div>
   </body>
 </html>
