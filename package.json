@@ -1,6 +1,11 @@
 {
-	"dependencies": {
-		"anywhere": "^1.6.0",
-		"canvas": "^2.10.1"
-	}
+  "dependencies": {
+    "anywhere": "^1.6.0",
+    "canvas": "^2.10.1",
+    "daisyui": "^2.28.0",
+    "theme-change": "^2.2.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.1.8"
+  }
 }

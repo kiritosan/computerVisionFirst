@@ -1,4 +1,6 @@
-import { doubleThresholds, nms, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, convolution, sobel, arrayDivide, expandToImageDataArray, normalization, gaussianFilter } from './src/util.js'
+import { doubleThresholds, nms, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, convolution, sobel, arrayDivide, expandToImageDataArray, normalization, gaussianFilter } from './lib/util.js'
+/* import { themeChange } from 'theme-change' */
+/* themeChange() */
 
 const canvasOriginal = document.getElementById('myCanvas') // canvas画布
 const canvasGray = document.getElementById('myCanvasGray') // canvas画布
@@ -11,9 +13,11 @@ const canvasEdgeYS = document.getElementById('myCanvasEdgeYS') // canvas画布
 const canvasEdgeTotalS = document.getElementById('myCanvasEdgeTotalS') // canvas画布
 const canvasNMS = document.getElementById('myCanvasNMS') // canvas画布
 const canvasLast = document.getElementById('myCanvasLast') // canvas画布
-const canvasTest = document.getElementById('myCanvasTest') // canvas画布
+const sobelButton = document.getElementById('sobelButton') // canvas画布
+const cannyButton = document.getElementById('cannyButton') // canvas画布
 
-getImageData(canvasOriginal, './img/test.jpg').then((data) => {
+/* 这里用./提示的文件路径是根据当前来的，但是index.html引入后.变成的index.html所在的目录造成了路径的变化 */
+getImageData(canvasOriginal, './src/assets/test.jpg').then((data) => {
   console.log('ImageDataArray:', data) // 打印输出像素数据
   /* pixelTraversal(data); */
   /* matrixTraversal(data) */
@@ -30,9 +34,9 @@ getImageData(canvasOriginal, './img/test.jpg').then((data) => {
   const normalGradYArray = normalization(gradYArray)
   const normalGradTotalArray = normalization(gradTotalArray)
 
-  const gradImageXArray = expandToImageDataArray(normalGradXArray.map((v) => v * 255))
-  const gradImageYArray = expandToImageDataArray(normalGradYArray.map((v) => v * 255))
-  const gradImageTotalArray = expandToImageDataArray(normalGradTotalArray.map((v) => v * 255))
+  const gradImageXArray = expandToImageDataArray(normalGradXArray)
+  const gradImageYArray = expandToImageDataArray(normalGradYArray)
+  const gradImageTotalArray = expandToImageDataArray(normalGradTotalArray)
 
   drawImageFromArray(canvasEdgeX, gradImageXArray)
   drawImageFromArray(canvasEdgeY, gradImageYArray)
@@ -53,15 +57,17 @@ getImageData(canvasOriginal, './img/test.jpg').then((data) => {
   const normalGradYArrayS = normalization(gradYArrayS)
   const normalGradTotalArrayS = normalization(gradTotalArrayS)
 
-  const gradImageXArrayS = expandToImageDataArray(normalGradXArrayS.map((v) => v * 255))
-  const gradImageYArrayS = expandToImageDataArray(normalGradYArrayS.map((v) => v * 255))
-  const gradImageTotalArrayS = expandToImageDataArray(normalGradTotalArrayS.map((v) => v * 255))
+  const gradImageXArrayS = expandToImageDataArray(normalGradXArrayS)
+  const gradImageYArrayS = expandToImageDataArray(normalGradYArrayS)
+  const gradImageTotalArrayS = expandToImageDataArray(normalGradTotalArrayS)
 
   drawImageFromArray(canvasEdgeXS, gradImageXArrayS)
   drawImageFromArray(canvasEdgeYS, gradImageYArrayS)
   drawImageFromArray(canvasEdgeTotalS, gradImageTotalArrayS)
 
-  const gradNMSArray = nms(gradTotalArray, gradXArray, gradYArray)
+  /* 高斯滤波后的图像的梯度 */
+  /* 用归一化之前的梯度值参与计算 */
+  const gradNMSArray = nms(gradTotalArrayS, gradXArrayS, gradYArrayS)
   window.data = gradNMSArray
   const gradNMSDataArray = expandToImageDataArray(gradNMSArray)
 
@@ -70,6 +76,7 @@ getImageData(canvasOriginal, './img/test.jpg').then((data) => {
   const gradNMSDTArray = doubleThresholds(gradNMSArray)
   console.log('gradNMSDTArray', gradNMSDTArray)
   window.d = gradNMSDTArray
+  /* DT后的数组值非零即一，所以要能显示出来需要乘以255 */
   const gradnmsDTDataArray = expandToImageDataArray(gradNMSDTArray.map((v) => v * 255))
 
   drawImageFromArray(canvasLast, gradnmsDTDataArray)

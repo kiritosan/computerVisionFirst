@@ -20,9 +20,10 @@ function drawImageFromArray(canvas, imgDataArray) {
   const w = Math.sqrt(imgDataArray.length / 4)
   const h = Math.sqrt(imgDataArray.length / 4)
   const imgData = ctx.createImageData(w, h)
-  for (let i = 0; i < imgDataArray.length; i += 4) {
-    ;[imgData.data[i], imgData.data[i + 1], imgData.data[i + 2], imgData.data[i + 3]] = [imgDataArray[i], imgDataArray[i + 1], imgDataArray[i + 2], imgDataArray[i + 3]]
-  }
+  imgData.data.set(imgDataArray)
+  /* for (let i = 0; i < imgDataArray.length; i += 4) { */
+  /*   ;[imgData.data[i], imgData.data[i + 1], imgData.data[i + 2], imgData.data[i + 3]] = [imgDataArray[i], imgDataArray[i + 1], imgDataArray[i + 2], imgDataArray[i + 3]] */
+  /* } */
   ctx.putImageData(imgData, 0, 0)
   console.log(`The picture has been rendered to canvas (canvas id: ${canvas.id})`)
 }
@@ -62,7 +63,7 @@ function grayScale(imgDataArray) {
 function normalization(array) {
   const max = Math.max.apply(null, array)
   const min = Math.min.apply(null, array)
-  return array.map((v) => Math.round((v - min) / (max - min)))
+  return array.map((v) => Math.round((v - min) / (max - min)) * 255)
 }
 
 /* TODO 为什么不直接算出width和height 因为图像不一定是方形的 目前大部分函数以方形计算 不灵活 */
@@ -268,6 +269,7 @@ function nms(gradTotalArray, gradXArray, gradYArray) {
   return gradNMSArray
 }
 
+/* 高低阈值比例在2:1和3:1之间 */
 function doubleThresholds(imgGradArray, thresholdsLow = 20, thresholdsHigh = 50) {
   const w = Math.sqrt(imgGradArray.length)
   return imgGradArray.map((v, i, arr) => {
