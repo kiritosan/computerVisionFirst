@@ -1,4 +1,4 @@
-import { nms, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, convolution, sobel, arrayDivide, expandToImageDataArray, normalization, gaussianFilter } from './src/util.js'
+import { doubleThresholds, nms, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, convolution, sobel, arrayDivide, expandToImageDataArray, normalization, gaussianFilter } from './src/util.js'
 
 const canvasOriginal = document.getElementById('myCanvas') // canvas画布
 const canvasGray = document.getElementById('myCanvasGray') // canvas画布
@@ -62,8 +62,15 @@ getImageData(canvasOriginal, './img/test.jpg').then((data) => {
   drawImageFromArray(canvasEdgeTotalS, gradImageTotalArrayS)
 
   const gradNMSArray = nms(gradTotalArray, gradXArray, gradYArray)
+  window.data = gradNMSArray
   const gradNMSDataArray = expandToImageDataArray(gradNMSArray)
 
   drawImageFromArray(canvasNMS, gradNMSDataArray)
-  /* drawImageFromArray(canvasTest, gradNMSDataArray) */
+
+  const gradNMSDTArray = doubleThresholds(gradNMSArray)
+  console.log('gradNMSDTArray', gradNMSDTArray)
+  window.d = gradNMSDTArray
+  const gradnmsDTDataArray = expandToImageDataArray(gradNMSDTArray.map((v) => v * 255))
+
+  drawImageFromArray(canvasLast, gradnmsDTDataArray)
 })

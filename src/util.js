@@ -23,7 +23,6 @@ function drawImageFromArray(canvas, imgDataArray) {
   for (let i = 0; i < imgDataArray.length; i += 4) {
     ;[imgData.data[i], imgData.data[i + 1], imgData.data[i + 2], imgData.data[i + 3]] = [imgDataArray[i], imgDataArray[i + 1], imgDataArray[i + 2], imgDataArray[i + 3]]
   }
-  window.a = imgData
   ctx.putImageData(imgData, 0, 0)
   console.log(`The picture has been rendered to canvas (canvas id: ${canvas.id})`)
 }
@@ -269,4 +268,43 @@ function nms(gradTotalArray, gradXArray, gradYArray) {
   return gradNMSArray
 }
 
-export { nms, radianToAngle, gaussianFilter, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide, normalization }
+function doubleThresholds(imgGradArray, thresholdsLow = 20, thresholdsHigh = 50) {
+  const w = Math.sqrt(imgGradArray.length)
+  return imgGradArray.map((v, i, arr) => {
+    if (v < thresholdsLow) {
+      return 0
+    } else if (v < thresholdsHigh) {
+      /* r*w+c=index; index/w得到的商是r，余数是c */
+      const [r, c] = [Math.floor(i / w), i % w]
+      /* 垂直向下是x方向，水平向右是y方向 */
+      const fieldX = [r - 1, r, r + 1]
+      const fieldY = [c - 1, c, c + 1]
+      for (const r of fieldX) {
+        for (const c of fieldY) {
+          /* 因为从头开始遍历像素点，所以index可能为负数，也可能大于数组的长度,此时array[i]返回undefined，undefined与数字比大小永远为false，对结果没有影响，故不用单独处理索引越界的情况 */
+          let index = r * w + c
+          /* 只要邻接像素中有一个像素的梯度高于高阈值，那么就返回1 */
+          if (arr[index] >= thresholdsHigh) {
+            return 1
+          }
+        }
+      }
+      /* 一个都没有就返回零 */
+      return 0
+    } else {
+      return 1
+    }
+  })
+}
+
+function counta(array) {
+  const obj = {}
+  array.forEach((v) => {
+    obj[v] = (obj[v] ?? 0) + 1
+  })
+  return obj
+}
+
+window.counta = counta
+
+export { counta, doubleThresholds, nms, radianToAngle, gaussianFilter, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide, normalization }
