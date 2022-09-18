@@ -1,6 +1,6 @@
 import { nms, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, convolution, sobel, arrayDivide, expandToImageDataArray, normalization, gaussianFilter } from './src/util.js'
 
-const canvas = document.getElementById('myCanvas') // canvas画布
+const canvasOriginal = document.getElementById('myCanvas') // canvas画布
 const canvasGray = document.getElementById('myCanvasGray') // canvas画布
 const canvasEdgeX = document.getElementById('myCanvasEdgeX') // canvas画布
 const canvasEdgeY = document.getElementById('myCanvasEdgeY') // canvas画布
@@ -9,10 +9,11 @@ const canvasGaussian = document.getElementById('myCanvasGaussian') // canvas画�
 const canvasEdgeXS = document.getElementById('myCanvasEdgeXS') // canvas画布
 const canvasEdgeYS = document.getElementById('myCanvasEdgeYS') // canvas画布
 const canvasEdgeTotalS = document.getElementById('myCanvasEdgeTotalS') // canvas画布
-const myCanvasNMS = document.getElementById('myCanvasNMS') // canvas画布
-const myCanvasLast = document.getElementById('myCanvasLast') // canvas画布
+const canvasNMS = document.getElementById('myCanvasNMS') // canvas画布
+const canvasLast = document.getElementById('myCanvasLast') // canvas画布
+const canvasTest = document.getElementById('myCanvasTest') // canvas画布
 
-getImageData(canvas, './img/test.jpg').then((data) => {
+getImageData(canvasOriginal, './img/test.jpg').then((data) => {
   console.log('ImageDataArray:', data) // 打印输出像素数据
   /* pixelTraversal(data); */
   /* matrixTraversal(data) */
@@ -60,17 +61,9 @@ getImageData(canvas, './img/test.jpg').then((data) => {
   drawImageFromArray(canvasEdgeYS, gradImageYArrayS)
   drawImageFromArray(canvasEdgeTotalS, gradImageTotalArrayS)
 
-  /* canny 4:nms */
-  /* const nmsArray = nms(gradTotalArrayS, gradXArrayS, gradYArrayS) */
-  /* let arr = new Array(16).fill(0) */
-  /* let arr1 = arr.map((v, i) => i) */
-  /* let arr2 = arr1.map((v, i) => Math.random()) */
-  /* let arr3 = arr.map((v, i) => Math.random()) */
-  /* window.nms = nms */
-  /* window.arr1 = arr1 */
-  /* window.arr2 = arr2 */
-  /* window.arr3 = arr3 */
-  /* nms(arr1, arr2, arr3) */
-
   const gradNMSArray = nms(gradTotalArray, gradXArray, gradYArray)
+  const gradNMSDataArray = expandToImageDataArray(gradNMSArray)
+
+  drawImageFromArray(canvasNMS, gradNMSDataArray)
+  /* drawImageFromArray(canvasTest, gradNMSDataArray) */
 })

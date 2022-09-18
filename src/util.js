@@ -17,12 +17,13 @@ function getImageData(canvas, url) {
 /* 向特定canvas元素输入图像 */
 function drawImageFromArray(canvas, imgDataArray) {
   const ctx = canvas.getContext('2d')
-  const { width: w, height: h } = canvas
+  const w = Math.sqrt(imgDataArray.length / 4)
+  const h = Math.sqrt(imgDataArray.length / 4)
   const imgData = ctx.createImageData(w, h)
   for (let i = 0; i < imgDataArray.length; i += 4) {
     ;[imgData.data[i], imgData.data[i + 1], imgData.data[i + 2], imgData.data[i + 3]] = [imgDataArray[i], imgDataArray[i + 1], imgDataArray[i + 2], imgDataArray[i + 3]]
   }
-
+  window.a = imgData
   ctx.putImageData(imgData, 0, 0)
   console.log(`The picture has been rendered to canvas (canvas id: ${canvas.id})`)
 }
