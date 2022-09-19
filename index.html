@@ -8,28 +8,65 @@
     <link rel="stylesheet" href="/dist/output.css">
   </head>
   <body>
-    <div> 
-      <select data-choose-theme class="select select-primary w-full max-w-xs">
-        <option value="halloween">halloween</option>
-        <option value="cyberpunk">cyberpunk</option>
-        <option value="lofi">lofi</option>
-        <option value="fantasy">fantasy</option>
-        <option value="forest">forest</option>
-        <option value="garden">garden</option>
-        <option value="dracula">dracula</option>
-        <option value="lenmonade">lenmonade</option>
-      </select>
+    <div class="container mx-auto"> 
+      <!-- navbar start-->
+      <div class="navbar bg-base-100">
+        <div class="flex-1">
+          <a class="btn btn-ghost normal-case text-xl">计算机视觉</a>
+        </div>
+        <div class="flex-none">
+          <ul class="menu menu-horizontal p-0">
+            <li><a>首页</a></li>
+            <li tabindex="0">
+              <a>
+                作业
+                <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/></svg>
+              </a>
+              <ul class="p-2 bg-base-100">
+                <li><a>第一次作业</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <!-- theme select start -->
+        <select data-choose-theme class="select select-primary ">
+          <option value="halloween">halloween</option>
+          <option value="cyberpunk">cyberpunk</option>
+          <option value="lofi">lofi</option>
+          <option value="fantasy">fantasy</option>
+          <option value="forest">forest</option>
+          <option value="garden">garden</option>
+          <option value="dracula">dracula</option>
+          <option value="lenmonade">lenmonade</option>
+        </select>
+        <!-- theme select end -->
+      </div>
+      <!-- navbar end -->
 
-      <input type="file">
-      <button id="sobelButton"  class="btn btn-primary">应用sobel算法</button>
-      <button id="cannyButton" class="btn btn-primary">应用canny算法</button>
-      <ul class="steps">
-        <li class="step step-primary">Register</li>
-        <li class="step step-primary">Choose plan</li>
-        <li class="step">Purchase</li>
-        <li class="step">Receive Product</li>
-      </ul>
-      <input type="range" min="0" max="100" value="40" class="range range-xs" />
+      <!-- apply button -->
+      <div class="container mx-auto mt-20">
+        <input type="file">
+        <button id="sobelButton"  class="btn btn-primary">应用sobel算法</button>
+        <button id="cannyButton" class="btn btn-primary">应用canny算法</button>
+      </div>
+      <!-- apply button end-->
+
+      <!-- steps start -->
+      <div class="container mx-auto">
+        <div class="btn-group">
+          <button class="btn">上一步</button>
+          <button class="btn btn-active">下一步</button>
+        </div>
+
+        <ul class="steps">
+          <li class="step step-primary">Register</li>
+          <li class="step step-primary">Choose plan</li>
+          <li class="step">Purchase</li>
+          <li class="step">Receive Product</li>
+        </ul>
+        <input type="range" min="0" max="100" value="40" class="range range-xs" />
+
+      </div>
 
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-2 gap-4">
