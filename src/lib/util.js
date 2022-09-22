@@ -1,17 +1,71 @@
-function getImageData(canvas, url) {
+function isValidURL(url){
+  var urlRegExp=/^((https|http|ftp|rtsp|mms)?:\/\/)+[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"\"])*$/;
+  if(urlRegExp.test(url)){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+const awaitWrap = (promise) => {
+        return promise
+            .then(data => [null, data])
+            .catch(err => [err, null])
+    }
+
+function getImageData(url) {
+  const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d') // 设置在画布上绘图的环境
   const image = new Image()
+  image.crossOrigin = "Anonymous"
   image.src = url
-  //获取画布宽高
-  const { width: w, height: h } = canvas
   return new Promise((resolve) => {
     image.onload = function () {
+      const w = image.width
+      const h = image.height
+      canvas.width = w
+      canvas.height = h
       ctx.drawImage(image, 0, 0, w, h) // 将图片绘制到画布上
       const imgData = ctx.getImageData(0, 0, w, h) // 获取画布上的图像像素
-      resolve(imgData.data) // 获取到的数据为一维数组,包含图像的RGBA四个通道数据
-      /* ctx.clearRect(0, 0, w, h); */
+      // try {
+      //   localStorage.setItem("saved-image-example", canvas.toDataURL("image/png"))
+      // } catch (err) {
+      //   console.error(`Error: ${err}`)
+      // }
+      return resolve(imgData) // 获取到的数据为一维数组,包含图像的RGBA四个通道数据
     }
   })
+}
+
+function htmlToElement(html) {
+  const template = document.createElement('template');
+  html = html.trim(); // Never return a text node of whitespace as the result
+  template.innerHTML = html;
+  return template.content.firstChild;
+}
+
+function renderInsideDomFromDataObj(domId, imgData, title='标题未定') {
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+
+  const { width, height } = imgData
+  canvas.width = width
+  canvas.height = height
+
+  ctx.putImageData(imgData, 0, 0)
+
+  const template = `<div class="card w-96 bg-base-100 shadow-xl mx-auto">
+	<div class="card-body mx-auto">
+		<h2 class="card-title">${title}</h2>
+	</div>
+	<figure></figure>
+</div>`
+
+  const card = htmlToElement(template)
+  card.querySelector('figure').insertAdjacentElement('afterbegin', canvas)
+  document.getElementById(domId).insertAdjacentElement('beforeend', card)
+
+  console.log('The Dom has been rendered, Congratulations');
 }
 
 /* 向特定canvas元素输入图像 */
@@ -48,26 +102,28 @@ function matrixTraversal({ width, height }) {
 /* https://www.zhihu.com/question/22039410 */
 /* https://en.wikipedia.org/wiki/Grayscale */
 /*灰度算法: 0.299*r+0.587*g+0.114*b */
-function grayScale(imgDataArray) {
-  const imgArray = []
-  for (let i = 0; i < imgDataArray.length; i += 4) {
-    const [r, g, b] = [imgDataArray[i], imgDataArray[i + 1], imgDataArray[i + 2]]
+// 传入imgData
+function grayScale({ data, width, height }) {
+  const imgGrayArray = []
+  for (let i = 0; i < data.length; i += 4) {
+    const [r, g, b] = [data[i], data[i + 1], data[i + 2]]
     const y = 0.299 * r + 0.587 * g + 0.114 * b
-    imgArray.push(y)
+    imgGrayArray.push(y)
   }
-  console.log('ImageGrayArray:', imgArray)
-  return imgArray
+  console.log('ImageGrayArray:', imgGrayArray)
+  return { imgGrayArray, width, height }
 }
 
 /* 需要归一化后再乘255 */
 function normalization(array) {
-  const max = Math.max.apply(null, array)
-  const min = Math.min.apply(null, array)
+  const max = _.max(array)
+  const min = _.min(array)
   return array.map((v) => Math.round((v - min) / (max - min)) * 255)
 }
 
 /* TODO 为什么不直接算出width和height 因为图像不一定是方形的 目前大部分函数以方形计算 不灵活 */
-function sobel(imgGrayDataArray, imgWidth, imgHeight) {
+// 传入imgData
+function sobel({ data: imgGrayDataArray, width: imgWidth, height: imgHeight }) {
   const kernelX = [-1, 0, -1, -2, 0, +2, -1, 0, +1]
   const kernelY = [1, 2, 1, 0, 0, 0, -1, -2, -1]
   /*最边上一圈像素不卷积*/
@@ -75,10 +131,10 @@ function sobel(imgGrayDataArray, imgWidth, imgHeight) {
   const gradYArray = []
   const gradTotalArray = []
   const thetaArray = []
-  for (let i = 1; i < imgWidth - 1; i++) {
-    for (let j = 1; j < imgHeight - 1; j++) {
-      const gradX = Math.floor(convolution(imgGrayDataArray, i, j, kernelX) / 8) /* 得到正确的幅值需要除以8 */
-      const gradY = Math.floor(convolution(imgGrayDataArray, i, j, kernelY) / 8) /* 得到正确的幅值需要除以8 */
+  for (let i = 1; i < imgHeight - 1; i++) {
+    for (let j = 1; j < imgWidth - 1; j++) {
+      const gradX = Math.floor(convolution(imgGrayDataArray, i, j, kernelX, imgWidth) / 8) /* 得到正确的幅值需要除以8 */
+      const gradY = Math.floor(convolution(imgGrayDataArray, i, j, kernelY, imgWidth) / 8) /* 得到正确的幅值需要除以8 */
       const gradTotal = Math.sqrt(Math.pow(gradX, 2) + Math.pow(gradY, 2))
       const theta = radianToAngle(Math.atan(gradY / gradX))
       gradXArray.push(gradX)
@@ -98,13 +154,12 @@ function sobel(imgGrayDataArray, imgWidth, imgHeight) {
 /* 只能卷积三个核的 */
 /* const arr = new Array(5).fill(0) */
 /* const arr = new Array(kernelLength).fill(0).map((v, i) => i - Math.floor(kernelLength / 2)) */
-function convolution(imgGrayDataArray, pixelPosX, pixelPosY, kernel) {
+function convolution(imgGrayDataArray, pixelPosX, pixelPosY, kernel, width) {
   const kernelLength = Math.sqrt(kernel.length)
   /* 中心是零的数组 */
   const tmpArr = new Array(kernelLength).fill(0).map((v, i) => i - Math.floor(kernelLength / 2))
   const fieldX = tmpArr.map((v) => v + pixelPosX) /* 向下是x方向，向右是y方向 */
   const fieldY = tmpArr.map((v) => v + pixelPosY)
-  const width = Math.sqrt(imgGrayDataArray.length / 4)
   let i = 0
   let res = 0
   for (const row of fieldX) {
@@ -142,6 +197,16 @@ function expandToImageDataArray(array) {
   return imgDataArray
 }
 
+function expandToImageData(imageDataArray, width, height) {
+  const ctx = document.createElement('canvas').getContext('2d')
+  console.log('--------------------',width,height);
+  const imgData = ctx.createImageData(width, height)
+  imgData.data.set(imageDataArray)
+
+  console.log('imgData expand success', imgData)
+  return imgData
+}
+
 function arrayDivide(arrayY, arrayX) {
   if (!arrayY.length || !arrayX.length) {
     console.error("array can't be empty")
@@ -156,9 +221,8 @@ function arrayDivide(arrayY, arrayX) {
 
 /* https://zhuanlan.zhihu.com/p/445415462 用的二维高斯公式不是离散的，好像有问题*/
 /* https://blog.csdn.net/qq_45717425/article/details/120640688 */
-function gaussianFilter(imgDataArray, k, sigma) {
+function gaussianFilter({ data: imgDataArray, width, height }, k=5, sigma=1) {
   const gauss_kernel = []
-  const len = Math.sqrt(Math.floor(imgDataArray.length / 4))
   const imgArray = []
   const edgeBias = Math.floor(k / 2)
   const zeroCenteredArray = new Array(k).fill(0).map((v, i) => i - Math.floor(k / 2))
@@ -180,9 +244,9 @@ function gaussianFilter(imgDataArray, k, sigma) {
   })
 
   //根据卷积核的大小不同，边缘减少的大小也不同 k=5的时候，要从2开始
-  for (let i = edgeBias; i < len - edgeBias; i++) {
-    for (let j = edgeBias; j < len - edgeBias; j++) {
-      imgArray.push(convolution(imgDataArray, i, j, gauss_kernel))
+  for (let i = edgeBias; i < height - edgeBias; i++) {
+    for (let j = edgeBias; j < width - edgeBias; j++) {
+      imgArray.push(convolution(imgDataArray, i, j, gauss_kernel, width))
     }
   }
 
@@ -196,12 +260,10 @@ function radianToAngle(radian) {
 }
 
 /* https://blog.csdn.net/weixin_39994296/article/details/110595624 */
-function nms(gradTotalArray, gradXArray, gradYArray) {
-  const len = gradTotalArray.length
-  const w = Math.sqrt(len)
+function nms(gradTotalArray, gradXArray, gradYArray, w, h) {
   const gradNMSArray = []
   /* 去掉外圈一层 */
-  for (let r = 1; r < w - 1; r++) {
+  for (let r = 1; r < h - 1; r++) {
     for (let c = 1; c < w - 1; c++) {
       let index = r * w + c
       /* 向下是x方向，向右是y方向 */
@@ -309,4 +371,4 @@ function counta(array) {
 
 window.counta = counta
 
-export { counta, doubleThresholds, nms, radianToAngle, gaussianFilter, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide, normalization }
+export { isValidURL, awaitWrap, expandToImageData, renderInsideDomFromDataObj, counta, doubleThresholds, nms, radianToAngle, gaussianFilter, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide, normalization }

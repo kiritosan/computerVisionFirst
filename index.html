@@ -1,166 +1,121 @@
 <!DOCTYPE html>
 <html lang="zh">
-  <head>
-    <title></title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script type="module" src="src/main.js" defer></script>
-    <link rel="stylesheet" href="/dist/output.css">
-  </head>
-  <body>
-    <div class="container mx-auto"> 
-      <!-- navbar start-->
-      <div class="navbar bg-base-100">
-        <div class="flex-1">
-          <a class="btn btn-ghost normal-case text-xl">计算机视觉</a>
-        </div>
-        <div class="flex-none">
-          <ul class="menu menu-horizontal p-0">
-            <li><a>首页</a></li>
-            <li tabindex="0">
-              <a>
-                作业
-                <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/></svg>
-              </a>
-              <ul class="p-2 bg-base-100">
-                <li><a>第一次作业</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-        <!-- theme select start -->
-        <select data-choose-theme class="select select-primary ">
-          <option value="halloween">halloween</option>
-          <option value="cyberpunk">cyberpunk</option>
-          <option value="lofi">lofi</option>
-          <option value="fantasy">fantasy</option>
-          <option value="forest">forest</option>
-          <option value="garden">garden</option>
-          <option value="dracula">dracula</option>
-          <option value="lenmonade">lenmonade</option>
-        </select>
-        <!-- theme select end -->
+
+<head>
+  <title></title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" defer></script>
+  <script type="module" src="src/main.js" defer></script>
+  <link rel="stylesheet" href="/dist/output.css">
+</head>
+
+<body>
+  <div class="container mx-auto">
+    <!-- navbar start-->
+    <div class="navbar bg-base-100">
+      <div class="flex-1">
+        <a class="btn btn-ghost normal-case text-xl">计算机视觉</a>
       </div>
-      <!-- navbar end -->
-
-      <!-- apply button -->
-      <div class="container mx-auto mt-20">
-        <input type="file">
-        <button id="sobelButton"  class="btn btn-primary">应用sobel算法</button>
-        <button id="cannyButton" class="btn btn-primary">应用canny算法</button>
-      </div>
-      <!-- apply button end-->
-
-      <!-- steps start -->
-      <div class="container mx-auto">
-        <div class="btn-group">
-          <button class="btn">上一步</button>
-          <button class="btn btn-active">下一步</button>
-        </div>
-
-        <ul class="steps">
-          <li class="step step-primary">Register</li>
-          <li class="step step-primary">Choose plan</li>
-          <li class="step">Purchase</li>
-          <li class="step">Receive Product</li>
+      <div class="flex-none">
+        <ul class="menu menu-horizontal p-0">
+          <li><a>首页</a></li>
+          <li tabindex="0">
+            <a>
+              作业
+              <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+              </svg>
+            </a>
+            <ul class="p-2 bg-base-100">
+              <li><a>第一次作业</a></li>
+            </ul>
+          </li>
         </ul>
-        <input type="range" min="0" max="100" value="40" class="range range-xs" />
-
       </div>
+      <!-- theme select start -->
+      <select data-choose-theme class="select select-primary ">
+        <option value="halloween">halloween</option>
+        <option value="forest">forest</option>
+        <option value="cyberpunk">cyberpunk</option>
+        <option value="lofi">lofi</option>
+        <option value="fantasy">fantasy</option>
+        <option value="garden">garden</option>
+        <option value="dracula">dracula</option>
+        <option value="lemonade">lemonade</option>
+      </select>
+      <!-- theme select end -->
+    </div>
+    <!-- navbar end -->
 
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="card w-86 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">原图</h2>
-            </div>
-            <figure><canvas id="myCanvas" width="300" height="300"></canvas></figure>
-          </div>
-
-          <div class="card w-96 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">灰度处理</h2>
-            </div>
-            <figure><canvas id="myCanvasGray" width="300" height="300"></canvas></figure>
-          </div>
-
-          <div class="card w-96 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">X方向梯度</h2>
-            </div>
-            <figure><canvas id="myCanvasEdgeX" width="298" height="298"></canvas></figure>
-          </div>
-
-          <div class="card w-96 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">Y方向梯度</h2>
-            </div>
-            <figure><canvas id="myCanvasEdgeY" width="298" height="298"></canvas></figure>
-          </div>
-
-          <div class="card w-96 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">总梯度</h2>
-            </div>
-            <figure><canvas id="myCanvasEdgeTotal" width="298" height="298"></canvas></figure>
-          </div>
-        </div">
+    <!-- infobar start -->
+    <div id="success" style="display:none" class="alert alert-success shadow-lg">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>操作成功</span>
       </div>
+    </div>
 
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="card w-96 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">原图</h2>
-            </div>
-            <figure><canvas id="myCanvas" width="300" height="300"></canvas></figure>
-          </div>
+    <div id="failure" style="display:none" class="alert alert-error shadow-lg">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>操作失败，请重试</span>
+      </div>
+    </div>
+    <!-- infobar end -->
 
-          <div class="card w-96 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">高斯模糊</h2>
-            </div>
-            <!-- 由于k=5 所以像素值减两圈 边成了296＊296 -->
-            <figure><canvas id="myCanvasGaussian" width="296" height="296"></canvas></figure>
-          </div>
-
-          <div class="card w-96 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">x方向梯度</h2>
-            </div>
-            <figure><canvas id="myCanvasEdgeXS" width="294" height="294"></canvas></figure>
-          </div>
-
-          <div class="card w-96 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">y方向梯度</h2>
-            </div>
-            <figure><canvas id="myCanvasEdgeYS" width="294" height="294"></canvas></figure>
-          </div>
-
-          <div class="card w-96 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">总梯度</h2>
-            </div>
-            <figure><canvas id="myCanvasEdgeTotalS" width="294" height="294"></canvas></figure>
-          </div>
-
-          <div class="card w-96 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">非极大值抑制</h2>
-            </div>
-            <figure><canvas id="myCanvasNMS" width="296" height="296"></canvas></figure>
-          </div>
-
-          <div class="card w-96 bg-base-100 shadow-xl">
-            <div class="card-body mx-auto">
-              <h2 class="card-title">双阈值和边缘连接</h2>
-            </div>
-            <figure><canvas id="myCanvasLast" width="296" height="296"></canvas></figure>
-          </div>
+    <!-- apply search and button -->
+    <div class="container mx-auto mt-20 flex">
+      <div class="container mx-auto ml-20">
+        <input id="link" type="text" placeholder="请输入图片链接"
+          class="input input-bordered input-primary w-full max-w-xs hover:max-w-lg transition-all" />
+      </div>
+      <div class="container mx-auto ml-20">
+        <div>
+            <button id="getButton" class="btn btn-primary">获取图片</button>
+            <button id="getRandomButton" class="btn btn-primary">随机图片</button>
+        </div>
+        <div class="mt-2">
+            <button id="sobelButton" class="btn btn-primary">应用sobel算法</button>
+            <button id="cannyButton" class="btn btn-primary">应用canny算法</button>
         </div>
       </div>
-
     </div>
-  </body>
+  </div>
+  <!-- apply button end-->
+
+  <!-- steps start -->
+  <!-- <div class="container mx-auto mt-20"> -->
+  <!--   <div class="btn-group"> -->
+  <!--     <button class="btn">上一步</button> -->
+  <!--     <button class="btn btn-active">下一步</button> -->
+  <!--   </div> -->
+  <!--  -->
+  <!--   <ul class="steps"> -->
+  <!--     <li class="step step-primary">Register</li> -->
+  <!--     <li class="step step-primary">Choose plan</li> -->
+  <!--     <li class="step">Purchase</li> -->
+  <!--     <li class="step">Receive Product</li> -->
+  <!--   </ul> -->
+  <!--   <input type="range" min="0" max="100" value="40" class="range range-xs" /> -->
+  <!-- </div> -->
+  <!-- steps end -->
+
+  <!-- render start -->
+  <div id="renderContainerBelow" class="container mx-auto mt-10 px-4 grid grid-cols-2 gap-4"></div>
+  <div id="renderContainerAbove" class="container mx-auto mt-10"></div>
+  <!-- render end -->
+
+  </div>
+</body>
+
 </html>

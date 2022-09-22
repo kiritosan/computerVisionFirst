@@ -1,83 +1,182 @@
-import { doubleThresholds, nms, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, convolution, sobel, arrayDivide, expandToImageDataArray, normalization, gaussianFilter } from './lib/util.js'
-/* import { themeChange } from 'theme-change' */
-/* themeChange() */
+import { isValidURL, awaitWrap, expandToImageData, renderInsideDomFromDataObj, doubleThresholds, nms, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, convolution, sobel, arrayDivide, expandToImageDataArray, normalization, gaussianFilter } from './lib/util.js'
 
-const canvasOriginal = document.getElementById('myCanvas') // canvas画布
-const canvasGray = document.getElementById('myCanvasGray') // canvas画布
-const canvasEdgeX = document.getElementById('myCanvasEdgeX') // canvas画布
-const canvasEdgeY = document.getElementById('myCanvasEdgeY') // canvas画布
-const canvasEdgeTotal = document.getElementById('myCanvasEdgeTotal') // canvas画布
-const canvasGaussian = document.getElementById('myCanvasGaussian') // canvas画布
-const canvasEdgeXS = document.getElementById('myCanvasEdgeXS') // canvas画布
-const canvasEdgeYS = document.getElementById('myCanvasEdgeYS') // canvas画布
-const canvasEdgeTotalS = document.getElementById('myCanvasEdgeTotalS') // canvas画布
-const canvasNMS = document.getElementById('myCanvasNMS') // canvas画布
-const canvasLast = document.getElementById('myCanvasLast') // canvas画布
-const sobelButton = document.getElementById('sobelButton') // canvas画布
-const cannyButton = document.getElementById('cannyButton') // canvas画布
+themeChange()
 
-/* 这里用./提示的文件路径是根据当前来的，但是index.html引入后.变成的index.html所在的目录造成了路径的变化 */
-getImageData(canvasOriginal, './src/assets/test.jpg').then((data) => {
-  console.log('ImageDataArray:', data) // 打印输出像素数据
-  /* pixelTraversal(data); */
-  /* matrixTraversal(data) */
-  const imgGrayArray = grayScale(data)
+// pic:
+// https://lh1.hetaousercontent.com/img/f923e843d3053d7d.jpg?thumbnail=true
+
+const sobelButton = document.getElementById('sobelButton')
+const cannyButton = document.getElementById('cannyButton')
+const getRandomButton = document.getElementById('getRandomButton')
+const link = document.getElementById('link')
+const failure = document.querySelector('#failure')
+const success = document.querySelector('#success')
+
+link.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    getButton.click()
+  }
+})
+
+getRandomButton.addEventListener('click', async () => {
+  getRandomButton.disabled = true
+  const [err, res] = await awaitWrap(fetch('https://source.unsplash.com/random/300*150'))
+  // const [err, res] = await awaitWrap(fetch('https://tuapi.eees.cc/api.php?category=dongman&type=302'))
+  if (err) {
+    console.log(err)
+  } else {
+    link.value = res.url
+    getButton.click()
+    getButton.disabled = true
+  }
+  getRandomButton.disabled = false
+})
+
+getButton.addEventListener('click', async function (e) {
+    getButton.disabled = true
+    failure.style.display = 'none'
+    success.style.display = 'none'
+
+    if (!isValidURL(link.value)) {
+        alert('invalid url')
+        getButton.disabled = false
+        return
+    }
+
+    try {
+        const imgData = await getImageData(link.value)
+        window.imgData = imgData
+    } catch (e) {
+        failure.style.display = ''
+        console.log(e)
+    }
+    success.style.display = ''
+    console.log(imgData);
+    window.imgData = imgData
+
+  // const successBox = `<div class="alert alert-success shadow-lg">
+  //   <div>
+  //     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+  //     <span>图片获取成功！</span>
+  //   </div>
+  // </div>`
+
+  document.querySelector('[id= renderContainerAbove]').innerHTML = ''
+  document.querySelector('[id= renderContainerBelow]').innerHTML = ''
+  renderInsideDomFromDataObj('renderContainerAbove', window.imgData, '原图')
+  getButton.disabled = false
+})
+
+sobelButton.addEventListener('click', function(e) {
+  if (window.imgData) {
+    sobelButton.disabled = true
+    document.querySelector('[id=renderContainerBelow]').innerHTML = ''
+    sobelProcessor(window.imgData)
+    sobelButton.disabled = false
+  }
+})
+
+cannyButton.addEventListener('click', function(e) {
+  if (window.imgData) {
+    cannyButton.disabled = true
+    document.querySelector('[id=renderContainerBelow]').innerHTML = ''
+    cannyProcessor(window.imgData)
+    cannyButton.disabled = false
+  }
+})
+
+function sobelProcessor(imgData) {
+  /* 这里用./提示的文件路径是根据当前来的，但是index.html引入后.变成的index.html所在的目录造成了路径的变化 */
+  console.log('ImageData:', imgData) // 打印输出像素数据
+  /* pixelTraversal(imgData); */
+  /* matrixTraversal(imgData) */
+  const { imgGrayArray, width, height } = grayScale(imgData)
   const imgGrayDataArray = expandToImageDataArray(imgGrayArray)
+  const imgGrayData = expandToImageData(imgGrayDataArray, width, height)
 
-  drawImageFromArray(canvasGray, imgGrayDataArray)
+  renderInsideDomFromDataObj('renderContainerBelow', imgGrayData, '灰度处理')
+
   /* const kernel = [-1, 0, -1, -2, 0, +2, -1, 0, +1] */
   /* convolution(imgGrayDataArray, 1, 2, kernel) */
-  const { gradXArray, gradYArray, gradTotalArray, thetaArray } = sobel(imgGrayDataArray, canvasGray.width, canvasGray.height)
+  // TODO 得到的是小一圈的
+  const { gradXArray, gradYArray, gradTotalArray, thetaArray } = sobel(imgGrayData)
 
-  /* 归一化处理 */
+  /* 归一化处理 得到一值一组的数组 */
   const normalGradXArray = normalization(gradXArray)
   const normalGradYArray = normalization(gradYArray)
   const normalGradTotalArray = normalization(gradTotalArray)
 
-  const gradImageXArray = expandToImageDataArray(normalGradXArray)
-  const gradImageYArray = expandToImageDataArray(normalGradYArray)
-  const gradImageTotalArray = expandToImageDataArray(normalGradTotalArray)
+  /* 扩展成ImageDataArray 得到四值一组的数组 */
+  const gradXImageDataArray = expandToImageDataArray(normalGradXArray)
+  const gradYImageDataArray = expandToImageDataArray(normalGradYArray)
+  const gradTotalImageDataArray = expandToImageDataArray(normalGradTotalArray)
 
-  drawImageFromArray(canvasEdgeX, gradImageXArray)
-  drawImageFromArray(canvasEdgeY, gradImageYArray)
-  drawImageFromArray(canvasEdgeTotal, gradImageTotalArray)
+  const gradXImage = expandToImageData(gradXImageDataArray, width-2, height-2)
+  const gradYImage = expandToImageData(gradYImageDataArray, width-2, height-2)
+  const gradTotalImage = expandToImageData(gradTotalImageDataArray, width-2, height-2)
+
+  renderInsideDomFromDataObj('renderContainerBelow', gradXImage, 'X方向梯度')
+  renderInsideDomFromDataObj('renderContainerBelow', gradYImage, 'Y方向梯度')
+  renderInsideDomFromDataObj('renderContainerBelow', gradTotalImage, '幅值')
 
   console.warn('----------------sobel over----------------')
 
-  /* canny 2*/
-  const imgGrayGaussianArray = gaussianFilter(imgGrayDataArray, 5, 1)
+}
+
+function cannyProcessor(imgData) {
+  console.log('ImageData:', imgData) // 打印输出像素数据
+
+  const { imgGrayArray, width, height } = grayScale(imgData)
+  const imgGrayDataArray = expandToImageDataArray(imgGrayArray)
+  const imgGrayData = expandToImageData(imgGrayDataArray, width, height)
+
+  renderInsideDomFromDataObj('renderContainerBelow', imgGrayData, '灰度处理')
+
+  /* canny 2 */
+  const imgGrayGaussianArray = gaussianFilter(imgGrayData, 5, 1)
   const imgGrayGaussianDataArray = expandToImageDataArray(imgGrayGaussianArray)
-  drawImageFromArray(canvasGaussian, imgGrayGaussianDataArray)
+  // TODO 注意高斯模糊处理后少两圈
+  const imgGrayGaussianData = expandToImageData(imgGrayGaussianDataArray, width-4,height-4)
+
+  renderInsideDomFromDataObj('renderContainerBelow', imgGrayGaussianData, '高斯模糊')
 
   /* canny 3 */
-  const { gradXArray: gradXArrayS, gradYArray: gradYArrayS, thetaArray: thetaArrayS, gradTotalArray: gradTotalArrayS } = sobel(imgGrayGaussianDataArray, 296, 296)
+  const { gradXArray: gradXArrayS, gradYArray: gradYArrayS, thetaArray: thetaArrayS, gradTotalArray: gradTotalArrayS } = sobel(imgGrayGaussianData)
 
   /* 归一化处理 */
   const normalGradXArrayS = normalization(gradXArrayS)
   const normalGradYArrayS = normalization(gradYArrayS)
   const normalGradTotalArrayS = normalization(gradTotalArrayS)
 
-  const gradImageXArrayS = expandToImageDataArray(normalGradXArrayS)
-  const gradImageYArrayS = expandToImageDataArray(normalGradYArrayS)
-  const gradImageTotalArrayS = expandToImageDataArray(normalGradTotalArrayS)
+  const gradXImageDataArrayS = expandToImageDataArray(normalGradXArrayS)
+  const gradYImageDataArrayS = expandToImageDataArray(normalGradYArrayS)
+  const gradTotalImageDataArrayS = expandToImageDataArray(normalGradTotalArrayS)
+  // 在之前减两圈基础上减一圈，共减三圈，宽高各减六
+  const gradXImageS = expandToImageData(gradXImageDataArrayS, width-6, height-6)
+  const gradYImageS = expandToImageData(gradYImageDataArrayS, width-6, height-6)
+  const gradTotalImageS = expandToImageData(gradTotalImageDataArrayS, width-6, height-6)
 
-  drawImageFromArray(canvasEdgeXS, gradImageXArrayS)
-  drawImageFromArray(canvasEdgeYS, gradImageYArrayS)
-  drawImageFromArray(canvasEdgeTotalS, gradImageTotalArrayS)
+  renderInsideDomFromDataObj('renderContainerBelow', gradXImageS, 'X方向梯度')
+  renderInsideDomFromDataObj('renderContainerBelow', gradYImageS, 'Y方向梯度')
+  renderInsideDomFromDataObj('renderContainerBelow', gradTotalImageS, '幅值')
 
-  /* 高斯滤波后的图像的梯度 */
+  // canny 4
   /* 用归一化之前的梯度值参与计算 */
-  const gradNMSArray = nms(gradTotalArrayS, gradXArrayS, gradYArrayS)
+  const gradNMSArray = nms(gradTotalArrayS, gradXArrayS, gradYArrayS, width-6, height-6)
   window.data = gradNMSArray
   const gradNMSDataArray = expandToImageDataArray(gradNMSArray)
-
-  drawImageFromArray(canvasNMS, gradNMSDataArray)
+  // nms后再减一圈 高斯两圈 sobel一圈 nms一圈 一共四圈
+  const gradNMSData = expandToImageData(gradNMSDataArray, width-8, height-8)
+  renderInsideDomFromDataObj('renderContainerBelow', gradNMSData, '非极大值抑制')
 
   const gradNMSDTArray = doubleThresholds(gradNMSArray)
   console.log('gradNMSDTArray', gradNMSDTArray)
-  window.d = gradNMSDTArray
   /* DT后的数组值非零即一，所以要能显示出来需要乘以255 */
-  const gradnmsDTDataArray = expandToImageDataArray(gradNMSDTArray.map((v) => v * 255))
+  const gradNMSDTDataArray = expandToImageDataArray(gradNMSDTArray.map((v) => v * 255))
+  // DT实现的时候没有去掉边缘，所以不减边缘的像素
+  const gradNMSDTData = expandToImageData(gradNMSDTDataArray, width-8, height-8)
 
-  drawImageFromArray(canvasLast, gradnmsDTDataArray)
-})
+  renderInsideDomFromDataObj('renderContainerBelow', gradNMSDTData, '双阈值检测与边缘连接')
+
+  console.warn('----------------canny over----------------')
+}
