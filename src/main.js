@@ -52,7 +52,6 @@ getButton.addEventListener('click', async function (e) {
     }
     success.style.display = ''
     console.log(imgData);
-    window.imgData = imgData
 
   // const successBox = `<div class="alert alert-success shadow-lg">
   //   <div>

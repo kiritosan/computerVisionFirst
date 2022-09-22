@@ -35,16 +35,20 @@
         </ul>
       </div>
       <!-- theme select start -->
-      <select data-choose-theme class="select select-primary ">
-        <option value="halloween">halloween</option>
-        <option value="forest">forest</option>
-        <option value="cyberpunk">cyberpunk</option>
-        <option value="lofi">lofi</option>
-        <option value="fantasy">fantasy</option>
-        <option value="garden">garden</option>
-        <option value="dracula">dracula</option>
-        <option value="lemonade">lemonade</option>
-      </select>
+        <div data-choose-theme class="dropdown dropdown-end">
+            <label tabindex="0" class="btn m-1">主题</label>
+            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li><a data-set-theme='halloween' data-act-class="ACTIVECLASS">halloween</a></li>
+                <li><a data-set-theme='forest' data-act-class="ACTIVECLASS">forest</a></li>
+                <li><a data-set-theme="cyberpunk" data-act-class="ACTIVECLASS">cyberpunk</a></li>
+                <li><a data-set-theme="lofi" data-act-class="ACTIVECLASS">lofi</a></li>
+                <li><a data-set-theme="fantasy" data-act-class="ACTIVECLASS">fantasy</a></li>
+                <li><a data-set-theme="garden" data-act-class="ACTIVECLASS">garden</a></li>
+                <li><a data-set-theme="dracula" data-act-class="ACTIVECLASS">dracula</a></li>
+                <li><a data-set-theme="lemonade" data-act-class="ACTIVECLASS">lemonade</a></li>
+
+            </ul>
+        </div>
       <!-- theme select end -->
     </div>
     <!-- navbar end -->
@@ -73,6 +77,10 @@
     </div>
     <!-- infobar end -->
 
+    <!-- progress bar start -->
+    <progress style='display:none' class="progress w-56"></progress>
+    <!-- progress bar end -->
+
     <!-- apply search and button -->
     <div class="container mx-auto mt-20 flex">
       <div class="container mx-auto ml-20">
@@ -82,11 +90,11 @@
       <div class="container mx-auto ml-20">
         <div>
             <button id="getButton" class="btn btn-primary">获取图片</button>
-            <button id="getRandomButton" class="btn btn-primary">随机图片</button>
+            <button id="getRandomButton" class="btn btn-primary ml-2">随机图片</button>
         </div>
         <div class="mt-2">
             <button id="sobelButton" class="btn btn-primary">应用sobel算法</button>
-            <button id="cannyButton" class="btn btn-primary">应用canny算法</button>
+            <button id="cannyButton" class="btn btn-primary ml-2">应用canny算法</button>
         </div>
       </div>
     </div>
