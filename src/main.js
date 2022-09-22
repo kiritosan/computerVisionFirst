@@ -20,6 +20,9 @@ link.addEventListener('keydown', (e) => {
 
 getRandomButton.addEventListener('click', async () => {
   getRandomButton.disabled = true
+  setTimeout(()=>{
+      getRandomButton.disabled = false
+  }, 2000)
   const [err, res] = await awaitWrap(fetch('https://source.unsplash.com/random/300*150'))
   // const [err, res] = await awaitWrap(fetch('https://tuapi.eees.cc/api.php?category=dongman&type=302'))
   if (err) {
@@ -29,7 +32,6 @@ getRandomButton.addEventListener('click', async () => {
     getButton.click()
     getButton.disabled = true
   }
-  getRandomButton.disabled = false
 })
 
 getButton.addEventListener('click', async function (e) {

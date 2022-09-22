@@ -13,7 +13,7 @@ const awaitWrap = (promise) => {
             .catch(err => [err, null])
     }
 
-function getImageData(url) {
+function getImageData(url, fixH=300) {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d') // 设置在画布上绘图的环境
   const image = new Image()
@@ -23,10 +23,12 @@ function getImageData(url) {
     image.onload = function () {
       const w = image.width
       const h = image.height
-      canvas.width = w
-      canvas.height = h
-      ctx.drawImage(image, 0, 0, w, h) // 将图片绘制到画布上
-      const imgData = ctx.getImageData(0, 0, w, h) // 获取画布上的图像像素
+      const multiple = Math.floor(h/fixH)
+      const fixW = Math.floor(w/multiple)
+      canvas.width = fixW
+      canvas.height = fixH
+      ctx.drawImage(image, 0, 0, fixW, fixH) // 将图片绘制到画布上
+      const imgData = ctx.getImageData(0, 0, fixW, fixH) // 获取画布上的图像像素
       // try {
       //   localStorage.setItem("saved-image-example", canvas.toDataURL("image/png"))
       // } catch (err) {
@@ -54,12 +56,12 @@ function renderInsideDomFromDataObj(domId, imgData, title='标题未定') {
 
   ctx.putImageData(imgData, 0, 0)
 
-  const template = `<div class="card w-96 bg-base-100 shadow-xl mx-auto">
-	<div class="card-body mx-auto">
-		<h2 class="card-title">${title}</h2>
-	</div>
-	<figure></figure>
-</div>`
+  const template = `<div class="bg-base-100 shadow-xl mx-auto">
+                        <div class="card-body mx-auto">
+                            <h2 class="card-title">${title}</h2>
+                        </div>
+                        <figure></figure>
+                    </div>`
 
   const card = htmlToElement(template)
   card.querySelector('figure').insertAdjacentElement('afterbegin', canvas)
