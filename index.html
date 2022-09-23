@@ -7,6 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" defer></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" />
   <script type="module" src="src/main.js" defer></script>
   <link rel="stylesheet" href="/src/output.css">
 </head>
@@ -82,7 +84,7 @@
     <!-- progress bar end -->
 
     <!-- apply search and button -->
-    <div class="container mx-auto mt-20 flex">
+    <div id="control" class="container mx-auto mt-20 flex">
       <div class="container mx-auto ml-20">
         <input id="link" type="text" placeholder="请输入图片链接"
           class="input input-bordered input-primary w-full max-w-xs hover:max-w-lg transition-all" />
@@ -119,8 +121,11 @@
     <!-- steps end -->
 
     <!-- render start -->
-    <div id="renderContainerBelow" class="mx-auto mt-10 px-4 grid grid-cols-2 gap-4"></div>
-    <div id="renderContainerAbove" class="container mx-auto mt-10"></div>
+    <div id='dataTableContainer' class="container flex mx-auto mt-10" style="display: none">
+        <div id="dataTable" class="mx-auto"></div>
+    </div>
+    <div id="renderContainerBelow" class="mx-auto mt-10 px-4 grid grid-cols-2 gap-4" style="display:none"></div>
+    <div id="renderContainerAbove" class="container mx-auto mt-10 mb-20"></div>
     <!-- render end -->
 
   </div>

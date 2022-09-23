@@ -1,4 +1,4 @@
-import { isValidURL, awaitWrap, expandToImageData, renderInsideDomFromDataObj, doubleThresholds, nms, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, convolution, sobel, arrayDivide, expandToImageDataArray, normalization, gaussianFilter } from './lib/util.js'
+import { renderTableData, isValidURL, awaitWrap, expandToImageData, renderInsideDomFromDataObj, doubleThresholds, nms, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, convolution, sobel, arrayDivide, expandToImageDataArray, normalization, gaussianFilter } from './lib/util.js'
 
 themeChange()
 
@@ -35,6 +35,10 @@ getRandomButton.addEventListener('click', async () => {
 })
 
 getButton.addEventListener('click', async function (e) {
+    document.querySelector('[id=control]').classList.replace('mt-10', 'mt-20')
+    document.querySelector('[id= renderContainerBelow]').style.display = 'none'
+    document.querySelector('[id= dataTableContainer]').style.display = 'none'
+
     getButton.disabled = true
     failure.style.display = 'none'
     success.style.display = 'none'
@@ -53,22 +57,21 @@ getButton.addEventListener('click', async function (e) {
         console.log(e)
     }
     success.style.display = ''
-    console.log(imgData);
+    document.querySelector('[id=control]').classList.replace('mt-20', 'mt-10')
+    console.log('imgData get successfully', imgData)
 
-  // const successBox = `<div class="alert alert-success shadow-lg">
-  //   <div>
-  //     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-  //     <span>图片获取成功！</span>
-  //   </div>
-  // </div>`
-
-  document.querySelector('[id= renderContainerAbove]').innerHTML = ''
-  document.querySelector('[id= renderContainerBelow]').innerHTML = ''
-  renderInsideDomFromDataObj('renderContainerAbove', window.imgData, '原图')
-  getButton.disabled = false
+    // 清屏
+    document.querySelector('[id= dataTable]').innerHTML = ''
+    document.querySelector('[id= dataTable]').classList.remove('handsontable', 'htRowHeaders', 'htColumnHeaders')
+    document.querySelector('[id= renderContainerAbove]').innerHTML = ''
+    document.querySelector('[id= renderContainerBelow]').innerHTML = ''
+    renderInsideDomFromDataObj('renderContainerAbove', window.imgData, '原图')
+    getButton.disabled = false
 })
 
 sobelButton.addEventListener('click', function(e) {
+  document.querySelector('[id= renderContainerBelow]').style.display = ''
+  document.querySelector('[id= dataTableContainer]').style.display = ''
   if (window.imgData) {
     sobelButton.disabled = true
     document.querySelector('[id=renderContainerBelow]').innerHTML = ''
@@ -78,6 +81,8 @@ sobelButton.addEventListener('click', function(e) {
 })
 
 cannyButton.addEventListener('click', function(e) {
+  document.querySelector('[id= renderContainerBelow]').style.display = ''
+  document.querySelector('[id= dataTableContainer]').style.display = ''
   if (window.imgData) {
     cannyButton.disabled = true
     document.querySelector('[id=renderContainerBelow]').innerHTML = ''
@@ -116,6 +121,10 @@ function sobelProcessor(imgData) {
   const gradYImage = expandToImageData(gradYImageDataArray, width-2, height-2)
   const gradTotalImage = expandToImageData(gradTotalImageDataArray, width-2, height-2)
 
+  // 处理数据并渲染成表格
+  renderTableData('dataTable', gradXArray, gradYArray, gradTotalArray, thetaArray)
+
+  // 渲染处理后的图片
   renderInsideDomFromDataObj('renderContainerBelow', gradXImage, 'X方向梯度')
   renderInsideDomFromDataObj('renderContainerBelow', gradYImage, 'Y方向梯度')
   renderInsideDomFromDataObj('renderContainerBelow', gradTotalImage, '幅值')
@@ -142,7 +151,7 @@ function cannyProcessor(imgData) {
   renderInsideDomFromDataObj('renderContainerBelow', imgGrayGaussianData, '高斯模糊')
 
   /* canny 3 */
-  const { gradXArray: gradXArrayS, gradYArray: gradYArrayS, thetaArray: thetaArrayS, gradTotalArray: gradTotalArrayS } = sobel(imgGrayGaussianData)
+  const { gradXArray: gradXArrayS, gradYArray: gradYArrayS, gradTotalArray: gradTotalArrayS, thetaArray: thetaArrayS } = sobel(imgGrayGaussianData)
 
   /* 归一化处理 */
   const normalGradXArrayS = normalization(gradXArrayS)
@@ -156,6 +165,9 @@ function cannyProcessor(imgData) {
   const gradXImageS = expandToImageData(gradXImageDataArrayS, width-6, height-6)
   const gradYImageS = expandToImageData(gradYImageDataArrayS, width-6, height-6)
   const gradTotalImageS = expandToImageData(gradTotalImageDataArrayS, width-6, height-6)
+
+  // 处理数据并渲染成表格
+  renderTableData('dataTable', gradXArrayS, gradYArrayS, gradTotalArrayS, thetaArrayS)
 
   renderInsideDomFromDataObj('renderContainerBelow', gradXImageS, 'X方向梯度')
   renderInsideDomFromDataObj('renderContainerBelow', gradYImageS, 'Y方向梯度')

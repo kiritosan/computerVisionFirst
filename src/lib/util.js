@@ -1,3 +1,19 @@
+function renderTableData(elementName, gradXArray, gradYArray, gradTotalArray, thetaArray) {
+  const tableData = _.zip(gradXArray, gradYArray, gradTotalArray, thetaArray)
+  const titleArray = ['x方向梯度', 'y方向梯度', '梯度幅值', '梯度角度']
+  tableData.unshift(titleArray)
+
+  const dataTable = document.querySelector(`[id=${elementName}]`)
+  const hot = new Handsontable(dataTable, {
+    data: tableData,
+    rowHeaders: true,
+    colHeaders: true,
+    height: 500,
+    width: 398,
+    licenseKey: 'non-commercial-and-evaluation' // for non-commercial use only
+  })
+}
+
 function isValidURL(url){
   var urlRegExp=/^((https|http|ftp|rtsp|mms)?:\/\/)+[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"\"])*$/;
   if(urlRegExp.test(url)){
@@ -53,6 +69,7 @@ function renderInsideDomFromDataObj(domId, imgData, title='标题未定') {
   const { width, height } = imgData
   canvas.width = width
   canvas.height = height
+  canvas.classList.add('mb-6')
 
   ctx.putImageData(imgData, 0, 0)
 
@@ -138,7 +155,7 @@ function sobel({ data: imgGrayDataArray, width: imgWidth, height: imgHeight }) {
       const gradX = Math.floor(convolution(imgGrayDataArray, i, j, kernelX, imgWidth) / 8) /* 得到正确的幅值需要除以8 */
       const gradY = Math.floor(convolution(imgGrayDataArray, i, j, kernelY, imgWidth) / 8) /* 得到正确的幅值需要除以8 */
       const gradTotal = Math.sqrt(Math.pow(gradX, 2) + Math.pow(gradY, 2))
-      const theta = radianToAngle(Math.atan(gradY / gradX))
+      const theta = radianToAngle(Math.atan2(gradY, gradX))
       gradXArray.push(gradX)
       gradYArray.push(gradY)
       gradTotalArray.push(gradTotal)
@@ -149,7 +166,7 @@ function sobel({ data: imgGrayDataArray, width: imgWidth, height: imgHeight }) {
   console.log('gradYArray', gradYArray)
   console.log('gradTotalArray', gradTotalArray)
   console.log('thetaArray', thetaArray)
-  return { gradXArray, gradYArray, thetaArray, gradTotalArray }
+  return { gradXArray, gradYArray, gradTotalArray, thetaArray}
 }
 
 /* 使用此函数卷积的时候需要从1开始最后一个也不能要 最外面一圈都要去掉 */
@@ -372,4 +389,4 @@ function counta(array) {
 
 window.counta = counta
 
-export { isValidURL, awaitWrap, expandToImageData, renderInsideDomFromDataObj, counta, doubleThresholds, nms, radianToAngle, gaussianFilter, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide, normalization }
+export { renderTableData, isValidURL, awaitWrap, expandToImageData, renderInsideDomFromDataObj, counta, doubleThresholds, nms, radianToAngle, gaussianFilter, getImageData, pixelTraversal, matrixTraversal, grayScale, drawImageFromArray, transposition, convolution, sobel, expandToImageDataArray, arrayDivide, normalization }
