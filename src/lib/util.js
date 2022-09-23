@@ -201,7 +201,6 @@ function expandToImageDataArray(array) {
 
 function expandToImageData(imageDataArray, width, height) {
   const ctx = document.createElement('canvas').getContext('2d')
-  console.log('--------------------',width,height);
   const imgData = ctx.createImageData(width, height)
   imgData.data.set(imageDataArray)
 
