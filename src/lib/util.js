@@ -56,8 +56,8 @@ function renderInsideDomFromDataObj(domId, imgData, title='标题未定') {
 
   ctx.putImageData(imgData, 0, 0)
 
-  const template = `<div class="bg-base-100 shadow-xl mx-auto">
-                        <div class="card-body mx-auto">
+  const template = `<div class="card bg-base-100 shadow-xl mx-auto">
+                        <div class="card-body mx-auto item-center">
                             <h2 class="card-title">${title}</h2>
                         </div>
                         <figure></figure>
