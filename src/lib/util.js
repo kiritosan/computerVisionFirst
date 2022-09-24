@@ -15,12 +15,8 @@ function renderTableData(elementName, gradXArray, gradYArray, gradTotalArray, th
 }
 
 function isValidURL(url){
-  var urlRegExp=/^((https|http|ftp|rtsp|mms)?:\/\/)+[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"\"])*$/;
-  if(urlRegExp.test(url)){
-    return true;
-  }else{
-    return false;
-  }
+  const urlRegExp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+  return urlRegExp.test(url)
 }
 
 const awaitWrap = (promise) => {
