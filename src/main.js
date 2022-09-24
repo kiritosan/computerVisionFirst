@@ -1,4 +1,4 @@
-import { getImageData, isValidURL, awaitWrap } from './lib/util.js'
+import { getImageData, isValidURL, awaitWrap, renderInsideDomFromDataObj } from './lib/util.js'
 import { sobelProcessor, cannyProcessor } from './lib/processor.js'
 
 themeChange()
@@ -36,13 +36,12 @@ getRandomButton.addEventListener('click', async () => {
 getButton.addEventListener('click', async function (e) {
     getButton.disabled = true
     setTimeout(()=>{
-        getRandomButton.disabled = false
-        alert('请重新获取图片')
+        getButton.disabled = false
     }, 10000)
     document.querySelector('[id=control]').classList.replace('mt-10', 'mt-20')
     document.querySelector('[id=renderContainerAbove]').style.display = 'none'
     document.querySelector('[id=dataTableContainer]').style.display = 'none'
-    document.quereySelector('#failure').style.display = 'none'
+    document.querySelector('#failure').style.display = 'none'
     document.querySelector('#success').style.display = 'none'
 
     if (!isValidURL(link.value)) {
@@ -55,7 +54,7 @@ getButton.addEventListener('click', async function (e) {
         const imgData = await getImageData(link.value)
         window.imgData = imgData
     } catch (e) {
-        document.quereySelector('#failure').style.display = ''
+        document.querySelector('#failure').style.display = ''
         console.log(e)
     }
 

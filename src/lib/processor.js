@@ -10,7 +10,7 @@ function sobelProcessor(imgData) {
   const imgGrayDataArray = expandToImageDataArray(imgGrayArray)
   const imgGrayData = expandToImageData(imgGrayDataArray, width, height)
 
-  renderInsideDomFromDataObj('renderContainerBelow', imgGrayData, '灰度处理')
+  renderInsideDomFromDataObj('renderContainerAbove', imgGrayData, '灰度处理')
 
   /* const kernel = [-1, 0, -1, -2, 0, +2, -1, 0, +1] */
   /* convolution(imgGrayDataArray, 1, 2, kernel) */
@@ -35,9 +35,9 @@ function sobelProcessor(imgData) {
   renderTableData('dataTable', gradXArray, gradYArray, gradTotalArray, thetaArray)
 
   // 渲染处理后的图片
-  renderInsideDomFromDataObj('renderContainerBelow', gradXImage, 'X方向梯度')
-  renderInsideDomFromDataObj('renderContainerBelow', gradYImage, 'Y方向梯度')
-  renderInsideDomFromDataObj('renderContainerBelow', gradTotalImage, '幅值')
+  renderInsideDomFromDataObj('renderContainerAbove', gradXImage, 'X方向梯度')
+  renderInsideDomFromDataObj('renderContainerAbove', gradYImage, 'Y方向梯度')
+  renderInsideDomFromDataObj('renderContainerAbove', gradTotalImage, '幅值')
 
   console.warn('----------------sobel over----------------')
 
@@ -51,7 +51,7 @@ function cannyProcessor(imgData) {
   const imgGrayDataArray = expandToImageDataArray(imgGrayArray)
   const imgGrayData = expandToImageData(imgGrayDataArray, width, height)
 
-  renderInsideDomFromDataObj('renderContainerBelow', imgGrayData, '灰度处理')
+  renderInsideDomFromDataObj('renderContainerAbove', imgGrayData, '灰度处理')
 
   /* canny 2 */
   const imgGrayGaussianArray = gaussianFilter(imgGrayData, 5, 1)
@@ -59,7 +59,7 @@ function cannyProcessor(imgData) {
   // TODO 注意高斯模糊处理后少两圈
   const imgGrayGaussianData = expandToImageData(imgGrayGaussianDataArray, width-4,height-4)
 
-  renderInsideDomFromDataObj('renderContainerBelow', imgGrayGaussianData, '高斯模糊')
+  renderInsideDomFromDataObj('renderContainerAbove', imgGrayGaussianData, '高斯模糊')
 
   /* canny 3 */
   const { gradXArray: gradXArrayS, gradYArray: gradYArrayS, gradTotalArray: gradTotalArrayS, thetaArray: thetaArrayS } = sobel(imgGrayGaussianData)
@@ -80,9 +80,9 @@ function cannyProcessor(imgData) {
   // 处理数据并渲染成表格
   renderTableData('dataTable', gradXArrayS, gradYArrayS, gradTotalArrayS, thetaArrayS)
 
-  renderInsideDomFromDataObj('renderContainerBelow', gradXImageS, 'X方向梯度')
-  renderInsideDomFromDataObj('renderContainerBelow', gradYImageS, 'Y方向梯度')
-  renderInsideDomFromDataObj('renderContainerBelow', gradTotalImageS, '幅值')
+  renderInsideDomFromDataObj('renderContainerAbove', gradXImageS, 'X方向梯度')
+  renderInsideDomFromDataObj('renderContainerAbove', gradYImageS, 'Y方向梯度')
+  renderInsideDomFromDataObj('renderContainerAbove', gradTotalImageS, '幅值')
 
   // canny 4
   /* 用归一化之前的梯度值参与计算 */
@@ -91,7 +91,7 @@ function cannyProcessor(imgData) {
   const gradNMSDataArray = expandToImageDataArray(gradNMSArray)
   // nms后再减一圈 高斯两圈 sobel一圈 nms一圈 一共四圈
   const gradNMSData = expandToImageData(gradNMSDataArray, width-8, height-8)
-  renderInsideDomFromDataObj('renderContainerBelow', gradNMSData, '非极大值抑制')
+  renderInsideDomFromDataObj('renderContainerAbove', gradNMSData, '非极大值抑制')
 
   const gradNMSDTArray = doubleThresholds(gradNMSArray)
   console.log('gradNMSDTArray', gradNMSDTArray)
@@ -100,7 +100,7 @@ function cannyProcessor(imgData) {
   // DT实现的时候没有去掉边缘，所以不减边缘的像素
   const gradNMSDTData = expandToImageData(gradNMSDTDataArray, width-8, height-8)
 
-  renderInsideDomFromDataObj('renderContainerBelow', gradNMSDTData, '双阈值检测与边缘连接')
+  renderInsideDomFromDataObj('renderContainerAbove', gradNMSDTData, '双阈值检测与边缘连接')
 
   console.warn('----------------canny over----------------')
 }
