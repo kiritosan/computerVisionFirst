@@ -1,4 +1,4 @@
-import { renderTableData, expandToImageData, renderInsideDomFromDataObj, doubleThresholds, nms, grayScale, sobel, expandToImageDataArray, normalization, gaussianFilter } from './lib/util.js'
+import { renderTableData, expandToImageData, renderInsideDomFromDataObj, doubleThresholds, nms, grayScale, sobel, expandToImageDataArray, normalization, gaussianFilter } from './util.js'
 
 function sobelProcessor(imgData) {
   console.warn('----------------sobel start----------------')
