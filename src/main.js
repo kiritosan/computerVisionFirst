@@ -3,9 +3,6 @@ import { sobelProcessor, cannyProcessor } from './lib/processor.js'
 
 themeChange()
 
-// pic:
-// https://lh1.hetaousercontent.com/img/f923e843d3053d7d.jpg?thumbnail=true
-
 const sobelButton = document.getElementById('sobelButton')
 const cannyButton = document.getElementById('cannyButton')
 const getRandomButton = document.getElementById('getRandomButton')
@@ -23,7 +20,6 @@ getRandomButton.addEventListener('click', async () => {
       getRandomButton.disabled = false
   }, 2000)
   const [err, res] = await awaitWrap(fetch('https://source.unsplash.com/random/300*150'))
-  // const [err, res] = await awaitWrap(fetch('https://tuapi.eees.cc/api.php?category=dongman&type=302'))
   if (err) {
     console.log(err)
   } else {

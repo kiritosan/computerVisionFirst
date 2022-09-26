@@ -2,24 +2,18 @@ import { renderTableData, expandToImageData, renderInsideDomFromDataObj, doubleT
 
 function sobelProcessor(imgData) {
   console.warn('----------------sobel start----------------')
-  /* 这里用./提示的文件路径是根据当前来的，但是index.html引入后.变成的index.html所在的目录造成了路径的变化 */
-  console.log('ImageData:', imgData) // 打印输出像素数据
-  /* pixelTraversal(imgData); */
-  /* matrixTraversal(imgData) */
+  console.log('ImageData:', imgData)
   const { imgGrayArray, width, height } = grayScale(imgData)
   const imgGrayDataArray = expandToImageDataArray(imgGrayArray)
   const imgGrayData = expandToImageData(imgGrayDataArray, width, height)
 
   renderInsideDomFromDataObj('renderContainerAbove', imgGrayData, '灰度处理')
 
-  /* const kernel = [-1, 0, -1, -2, 0, +2, -1, 0, +1] */
-  /* convolution(imgGrayDataArray, 1, 2, kernel) */
-  // TODO 得到的是小一圈的
   const { gradXArray, gradYArray, gradTotalArray, thetaArray } = sobel(imgGrayData)
 
   /* 归一化处理 得到一值一组的数组 */
-  const normalGradXArray = normalization(gradXArray)
-  const normalGradYArray = normalization(gradYArray)
+  const normalGradXArray = normalization(gradXArray.map(v=>Math.abs(v)))  //负数梯度大也表示那里可能是边缘
+  const normalGradYArray = normalization(gradYArray.map(v=>Math.abs(v)))
   const normalGradTotalArray = normalization(gradTotalArray)
 
   /* 扩展成ImageDataArray 得到四值一组的数组 */
@@ -40,13 +34,13 @@ function sobelProcessor(imgData) {
   renderInsideDomFromDataObj('renderContainerAbove', gradTotalImage, '幅值')
 
   console.warn('----------------sobel over----------------')
-
 }
 
 function cannyProcessor(imgData) {
   console.warn('----------------canny start----------------')
-  console.log('ImageData:', imgData) // 打印输出像素数据
+  console.log('ImageData:', imgData)
 
+  // canny 1
   const { imgGrayArray, width, height } = grayScale(imgData)
   const imgGrayDataArray = expandToImageDataArray(imgGrayArray)
   const imgGrayData = expandToImageData(imgGrayDataArray, width, height)
@@ -56,7 +50,7 @@ function cannyProcessor(imgData) {
   /* canny 2 */
   const imgGrayGaussianArray = gaussianFilter(imgGrayData, 5, 1)
   const imgGrayGaussianDataArray = expandToImageDataArray(imgGrayGaussianArray)
-  // TODO 注意高斯模糊处理后少两圈
+  // TODO 注意k=5时高斯模糊处理后少两圈
   const imgGrayGaussianData = expandToImageData(imgGrayGaussianDataArray, width-4,height-4)
 
   renderInsideDomFromDataObj('renderContainerAbove', imgGrayGaussianData, '高斯模糊')

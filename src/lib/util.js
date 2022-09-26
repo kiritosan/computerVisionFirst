@@ -23,7 +23,7 @@ const awaitWrap = (promise) => {
         return promise
             .then(data => [null, data])
             .catch(err => [err, null])
-    }
+}
 
 function getImageData(url, fixH=300) {
   const canvas = document.createElement('canvas')
@@ -41,11 +41,6 @@ function getImageData(url, fixH=300) {
       canvas.height = fixH
       ctx.drawImage(image, 0, 0, fixW, fixH) // 将图片绘制到画布上
       const imgData = ctx.getImageData(0, 0, fixW, fixH) // 获取画布上的图像像素
-      // try {
-      //   localStorage.setItem("saved-image-example", canvas.toDataURL("image/png"))
-      // } catch (err) {
-      //   console.error(`Error: ${err}`)
-      // }
       return resolve(imgData) // 获取到的数据为一维数组,包含图像的RGBA四个通道数据
     }
   })
@@ -90,9 +85,6 @@ function drawImageFromArray(canvas, imgDataArray) {
   const h = Math.sqrt(imgDataArray.length / 4)
   const imgData = ctx.createImageData(w, h)
   imgData.data.set(imgDataArray)
-  /* for (let i = 0; i < imgDataArray.length; i += 4) { */
-  /*   ;[imgData.data[i], imgData.data[i + 1], imgData.data[i + 2], imgData.data[i + 3]] = [imgDataArray[i], imgDataArray[i + 1], imgDataArray[i + 2], imgDataArray[i + 3]] */
-  /* } */
   ctx.putImageData(imgData, 0, 0)
   console.log(`The picture has been rendered to canvas (canvas id: ${canvas.id})`)
 }
@@ -117,7 +109,10 @@ function matrixTraversal({ width, height }) {
 /* https://www.zhihu.com/question/22039410 */
 /* https://en.wikipedia.org/wiki/Grayscale */
 /*灰度算法: 0.299*r+0.587*g+0.114*b */
-// 传入imgData
+/**
+ * @param imgData
+ *
+ */
 function grayScale({ data, width, height }) {
   const imgGrayArray = []
   for (let i = 0; i < data.length; i += 4) {
@@ -136,12 +131,13 @@ function normalization(array) {
   return array.map((v) => Math.round((v - min) / (max - min)) * 255)
 }
 
-/* TODO 为什么不直接算出width和height 因为图像不一定是方形的 目前大部分函数以方形计算 不灵活 */
-// 传入imgData
+/**
+ * @param imgData
+ *
+ */
 function sobel({ data: imgGrayDataArray, width: imgWidth, height: imgHeight }) {
   const kernelX = [-1, 0, -1, -2, 0, +2, -1, 0, +1]
   const kernelY = [1, 2, 1, 0, 0, 0, -1, -2, -1]
-  /*最边上一圈像素不卷积*/
   const gradXArray = []
   const gradYArray = []
   const gradTotalArray = []
@@ -149,7 +145,7 @@ function sobel({ data: imgGrayDataArray, width: imgWidth, height: imgHeight }) {
   for (let i = 1; i < imgHeight - 1; i++) {
     for (let j = 1; j < imgWidth - 1; j++) {
       const gradX = Math.floor(convolution(imgGrayDataArray, i, j, kernelX, imgWidth) / 8) /* 得到正确的幅值需要除以8 */
-      const gradY = Math.floor(convolution(imgGrayDataArray, i, j, kernelY, imgWidth) / 8) /* 得到正确的幅值需要除以8 */
+      const gradY = Math.floor(convolution(imgGrayDataArray, i, j, kernelY, imgWidth) / 8)
       const gradTotal = Math.sqrt(Math.pow(gradX, 2) + Math.pow(gradY, 2))
       const theta = radianToAngle(Math.atan2(gradY, gradX))
       gradXArray.push(gradX)
@@ -165,10 +161,6 @@ function sobel({ data: imgGrayDataArray, width: imgWidth, height: imgHeight }) {
   return { gradXArray, gradYArray, gradTotalArray, thetaArray}
 }
 
-/* 使用此函数卷积的时候需要从1开始最后一个也不能要 最外面一圈都要去掉 */
-/* 只能卷积三个核的 */
-/* const arr = new Array(5).fill(0) */
-/* const arr = new Array(kernelLength).fill(0).map((v, i) => i - Math.floor(kernelLength / 2)) */
 function convolution(imgGrayDataArray, pixelPosX, pixelPosY, kernel, width) {
   const kernelLength = Math.sqrt(kernel.length)
   /* 中心是零的数组 */
@@ -183,7 +175,6 @@ function convolution(imgGrayDataArray, pixelPosX, pixelPosY, kernel, width) {
       i += 1
     }
   }
-  /* console.log('convolution result:', res) */
   return res
 }
 
@@ -276,18 +267,11 @@ function radianToAngle(radian) {
 /* https://blog.csdn.net/weixin_39994296/article/details/110595624 */
 function nms(gradTotalArray, gradXArray, gradYArray, w, h) {
   const gradNMSArray = []
-  /* 去掉外圈一层 */
   for (let r = 1; r < h - 1; r++) {
     for (let c = 1; c < w - 1; c++) {
       let index = r * w + c
       /* 向下是x方向，向右是y方向 */
-      /* const fieldX = tmpArr.map((v) => v + r)  */
-      /* const fieldY = tmpArr.map((v) => v + c) */
 
-      /* 通过两个循环拿坐标 取外围点的梯度值 */
-      /* 根据梯度方向正反取需要的点的梯度值加上权重得到插值点的权重 */
-      /* for (const row of fieldX) { */
-      /*   for (const col of fieldY) { */
       const gradX = gradXArray[index]
       const gradY = gradYArray[index]
       const gradTotal = gradTotalArray[index]
@@ -338,8 +322,6 @@ function nms(gradTotalArray, gradXArray, gradYArray, w, h) {
         gradNMSArray.push(0)
       }
     }
-    /* } */
-    /* } */
   }
   console.log('gradNMSArray', gradNMSArray)
   return gradNMSArray
